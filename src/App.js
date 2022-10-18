@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 function App() {
     const [players, setPlayers] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
+    const [status, setStatus] = React.useState("all");
     const useRef = React.useRef(0);
     const channels = [
         "ESL_SC2",
@@ -21,105 +22,118 @@ function App() {
         const base = "https://twitch-proxy.freecodecamp.rocks/twitch-api/";
         const type = "streams";
         const type2 = "channels";
-        channels.forEach(async (channel) => {
-            // console.log(channel);
-            const streamUri = base + type + "/" + channel;
-            const channelUri = base + type2 + "/" + channel;
+        let game, status;
 
-            // console.log("streamUri", streamUri);
-            const streamRes = await fetch(streamUri);
-            const streamData = await streamRes.json();
-            let game, status;
+        for (let channel of channels) {
+            const uri = base + type + "/" + channel;
+            const res = await fetch(uri);
+            const data = await res.json();
+            // console.log(uri);
 
-            if (streamRes.ok) {
-                if (streamData.stream === null) {
-                    game = "Offline";
-                    status = "Offline";
-                } else if (streamData.stream === undefined) {
-                    game = "Account Closed";
-                    status = "Offline";
-                } else {
-                    game = streamData.stream.game;
-                    status = "Online";
-                }
-
-                const channelRes = await fetch(channelUri);
-                const channelData = await channelRes.json();
-
-                // console.log("channelUri", channelUri);
-                // console.log("streamData", streamData)
-                // console.log("channelData", channelData)
-
-                if (channelRes.ok) {
-                    const user = {
-                        name:
-                            channelData.display_name != null
-                                ? channelData.display_name
-                                : channel,
-                        logo:
-                            channelData.logo != null
-                                ? channelData.logo
-                                : "https://dummyimage.com/50x50/ecf0e7/5c5457.jpg&text=0x3F",
-                        desc: status === "Online" ? channelData.status : "",
-                        game: game,
-                        url: channelData.url,
-                    };
-                    output.push(user);
-                    setLoading(false);
-                } else {
-                    console.log("Fail to fetch channelRes...");
-                }
+            if (data.stream === null) {
+                game = "Offline";
+                status = "Offline";
+            } else if (data.stream === undefined) {
+                game = "Account Closed";
+                status = "Offline";
             } else {
-                console.log("Fail to fetch streamRes...");
+                game = data.stream.game;
+                status = "Online";
             }
-        });
+
+            const uri2 = base + type2 + "/" + channel;
+            const res2 = await fetch(uri2);
+            const data2 = await res2.json();
+            // console.log(uri2);
+
+            const user = {
+                name: data2.display_name != null ? data2.display_name : channel,
+                logo:
+                    data2.logo != null
+                        ? data2.logo
+                        : "https://design-style-guide.freecodecamp.org/downloads/fcc_secondary_small.svg",
+                status: status === "Online" ? data2.status : "Offline",
+                game: game,
+                url: data2.url,
+            };
+            console.log("user", user.name);
+            output.push([user]);
+        }
+
+        console.log("done");
+
         setPlayers(output);
-        console.log("zzzz", players.length, output.length);
+        setLoading(false);
+        // console.log("zzzz", players.length, output.length);
     };
 
     useEffect(() => {
-        // if (players.length === 0) {
-        fetchData();
-        console.log("react", players);
-        // }
+        if (loading === true) {
+            fetchData();
+            console.log("react", players);
+        }
         useRef.current += 1;
-    }, []);
+    }, [players]);
 
     if (loading) return <h1>Loading...</h1>;
 
     // console.log("useRef.current", useRef.current);
+    const count = players.reduce((acc, o) => acc + Object.keys(o).length, 0);
+    console.log("table", players, players.length, count);
 
-    const PlayerTable = () => {
-        console.log("table", players);
-        return players ? (
-            <div>
-                <table>
+    const handleClick = (status) => {
+        console.log(status);
+        setStatus(status)
+        PlayerTable();
+    }
+
+
+    const PlayerTable = ({status}) => {
+
+        return (
+            <div class="players">
+                <table cellpadding="0" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Twitch Streamers {useRef.current}</th>
+                            <th colspan="3"><h3>Twitch Streamers - {status}</h3></th>
+                        </tr>
+                        <tr>
+                            <th  colspan="3">
+                                <button type="button" onClick={() => handleClick("all")}>All</button>
+                                <button type="button" onClick={() => handleClick("online")}>Online</button>
+                                <button type="button" onClick={() => handleClick("offline")}>Offline</button>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {players.forEach(function (player, idx) {
-                            <tr>
-                                <td>type: {player.name}</td>
 
-                            </tr>;
+
+                
+                        {players.map((player, index) => {
+                            return (
+                                <tr class={ (player[0].status) !== "Offline" ? "online" : "offline"}>
+                                    <td key={index}>
+                                        <img class="icon" src={player[0].logo} />
+                                    </td>
+                                    <td>
+                                        <a href={player[0].url} border="0" target="_blank" > {player[0].name} </a>
+                                    </td>
+                                    <td>{player[0].status}</td>
+                                </tr>
+                            );
                         })}
+                        
                     </tbody>
                 </table>
             </div>
-        ) : (
-            <></>
         );
     };
 
-
     return (
         <div className="App">
-            <PlayerTable /><br/>
-            {/* {JSON.stringify(players)}, */}
-            length: {players.length}
+            <br />
+            <PlayerTable status={status}/>
+            <br />
         </div>
     );
 }
