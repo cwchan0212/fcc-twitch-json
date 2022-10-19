@@ -84,6 +84,9 @@ function App() {
     const handleClick = (status) => {
         console.log(status);
         setStatus(status)
+
+
+
         PlayerTable();
     }
 
@@ -107,9 +110,11 @@ function App() {
                     </thead>
                     <tbody>
 
-
-                
-                        {players.map((player, index) => {
+                     {
+                        (status !== "online" && status !== "offline") ? 
+                        
+                        <>
+                          {players.map((player, index) => {
                             return (
                                 <tr class={ (player[0].status) !== "Offline" ? "online" : "offline"}>
                                     <td key={index}>
@@ -122,7 +127,14 @@ function App() {
                                 </tr>
                             );
                         })}
+                        </>
                         
+                        
+                        : <></>
+                      }
+                        
+                        
+                      
                     </tbody>
                 </table>
             </div>
