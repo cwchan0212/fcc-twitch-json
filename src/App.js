@@ -57,11 +57,11 @@ function App() {
                 status: status === "Online" ? "online" : "offline",
                 url: data2.url,
             };
-            console.log("user", user.name);
+            // console.log("user", user.name);
             output.push([user]);
         }
 
-        console.log("done");
+        // console.log("done");
 
         setPlayers(output);
         setLoading(false);
@@ -71,7 +71,7 @@ function App() {
     useEffect(() => {
         if (loading === true) {
             fetchData();
-            console.log("react", players);
+            // console.log("react", players);
         }
         useRef.current += 1;
     }, [players]);
@@ -95,11 +95,11 @@ function App() {
     }
 
     // console.log("useRef.current", useRef.current);
-    const count = players.reduce((acc, o) => acc + Object.keys(o).length, 0);
-    console.log("table", players, players.length, count);
+    // const count = players.reduce((acc, o) => acc + Object.keys(o).length, 0);
+    // console.log("table", players, players.length, count);
 
     const handleClick = (status) => {
-        console.log(status);
+        // console.log(status);
         setStatus(status);
         PlayerTable(status);
     };
