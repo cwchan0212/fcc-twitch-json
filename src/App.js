@@ -52,8 +52,9 @@ function App() {
                     data2.logo != null
                         ? data2.logo
                         : "https://design-style-guide.freecodecamp.org/downloads/fcc_secondary_small.svg",
-                status: status === "Online" ? data2.status : "Offline",
+                desc: status === "Online" ? data2.status : "Offline",
                 game: game,
+                status: status === "Online" ? "online" : "offline",
                 url: data2.url,
             };
             console.log("user", user.name);
@@ -75,7 +76,23 @@ function App() {
         useRef.current += 1;
     }, [players]);
 
-    if (loading) return <h1>Loading...</h1>;
+    if (loading) {
+        return (
+            <>
+                <div class="container">
+                    <div class="loader">
+                        <div class="loader--dot"></div>
+                        <div class="loader--dot"></div>
+                        <div class="loader--dot"></div>
+                        <div class="loader--dot"></div>
+                        <div class="loader--dot"></div>
+                        <div class="loader--dot"></div>
+                        <div class="loader--text"></div>
+                    </div>
+                </div>
+            </>
+        );
+    }
 
     // console.log("useRef.current", useRef.current);
     const count = players.reduce((acc, o) => acc + Object.keys(o).length, 0);
@@ -83,58 +100,106 @@ function App() {
 
     const handleClick = (status) => {
         console.log(status);
-        setStatus(status)
+        setStatus(status);
+        PlayerTable(status);
+    };
 
-
-
-        PlayerTable();
-    }
-
-
-    const PlayerTable = ({status}) => {
-
+    const PlayerTable = ({ status }) => {
         return (
             <div class="players">
                 <table cellpadding="0" cellspacing="0">
                     <thead>
                         <tr>
-                            <th colspan="3"><h3>Twitch Streamers - {status}</h3></th>
+                            <th colspan="3">
+                                <h3>Twitch Streamers</h3>
+                            </th>
                         </tr>
                         <tr>
-                            <th  colspan="3">
-                                <button type="button" onClick={() => handleClick("all")}>All</button>
-                                <button type="button" onClick={() => handleClick("online")}>Online</button>
-                                <button type="button" onClick={() => handleClick("offline")}>Offline</button>
+                            <th colspan="3">
+                                <button
+                                    class="btn btn-primary btn-sm"
+                                    type="button"
+                                    onClick={() => handleClick("all")}
+                                >
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>{" "}
+                                    All
+                                </button>
+                                <button
+                                    class="btn btn-warning btn-sm"
+                                    type="button"
+                                    onClick={() => handleClick("online")}
+                                >
+                                    <i class="fa-solid fa-circle-up"></i> Online
+                                </button>
+                                <button
+                                    class="btn btn-danger btn-sm"
+                                    type="button"
+                                    onClick={() => handleClick("offline")}
+                                >
+                                    <i class="fa-solid fa-circle-down"></i>{" "}
+                                    Offline
+                                </button>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-
-                     {
-                        (status !== "online" && status !== "offline") ? 
-                        
-                        <>
-                          {players.map((player, index) => {
-                            return (
-                                <tr class={ (player[0].status) !== "Offline" ? "online" : "offline"}>
-                                    <td key={index}>
-                                        <img class="icon" src={player[0].logo} />
-                                    </td>
-                                    <td>
-                                        <a href={player[0].url} border="0" target="_blank" > {player[0].name} </a>
-                                    </td>
-                                    <td>{player[0].status}</td>
-                                </tr>
-                            );
-                        })}
-                        </>
-                        
-                        
-                        : <></>
-                      }
-                        
-                        
-                      
+                        {status !== "online" && status !== "offline" ? (
+                            <>
+                                {players.map((player, index) => {
+                                    return (
+                                        <tr class={player[0].status}>
+                                            <td key={index}>
+                                                <img
+                                                    class="icon"
+                                                    src={player[0].logo}
+                                                    alt =""
+                                                />
+                                            </td>
+                                            <td>
+                                                <a
+                                                    href={player[0].url}
+                                                    border="0"
+                                                    target="_blank" rel="noreferrer"
+                                                >
+                                                    {" "}
+                                                    {player[0].name}{" "}
+                                                </a>
+                                            </td>
+                                            <td>{player[0].desc}</td>
+                                        </tr>
+                                    );
+                                })}
+                            </>
+                        ) : (
+                            <>
+                                {players.map((player, index) => {
+                                    if (player[0].status === status) {
+                                        return (
+                                            <tr class={player[0].status}>
+                                                <td key={index}>
+                                                    <img
+                                                        class="icon"
+                                                        src={player[0].logo} 
+                                                        alt=""
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <a
+                                                        href={player[0].url}
+                                                        border="0"
+                                                        target="_blank" rel="noreferrer"
+                                                    >
+                                                        {" "}
+                                                        {player[0].name}{" "}
+                                                    </a>
+                                                </td>
+                                                <td>{player[0].desc}</td>
+                                            </tr>
+                                        );
+                                    }
+                                })}
+                            </>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -143,9 +208,16 @@ function App() {
 
     return (
         <div className="App">
-            <br />
-            <PlayerTable status={status}/>
-            <br />
+            <div className="banner">
+                <img
+                    className="logo"
+                    src="https://design-style-guide.freecodecamp.org/downloads/fcc_secondary_small.svg"
+                    alt="freeCodeCamp"
+                    loading="lazy"
+                />{" "}
+                =&gt; Use Twitch JSON API
+            </div>
+            <PlayerTable status={status} />
         </div>
     );
 }
