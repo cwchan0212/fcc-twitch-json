@@ -23,7 +23,7 @@ You can get feedback on your project by sharing it on the [freeCodeCamp forum](h
 **Solution Link**
 https://bit.ly/3N51FBI
 
-
+---
 
 ### Folder Structure
 
@@ -282,7 +282,7 @@ package.json
     };
 ```
 
-### Step 7: Create the banner
+### Step 7: Return **App** function with PlayerTable
 
 
 ```js
