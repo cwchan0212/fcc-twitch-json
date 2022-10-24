@@ -1,4 +1,4 @@
-## Use the Twitch JSON API
+# FCC: Use the Twitch JSON API
 
 **Objective**: Build an app that is functionally similar to this: https://codepen.io/freeCodeCamp/full/Myvqmo/.
 
