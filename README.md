@@ -167,7 +167,7 @@ package.json
 
 - Create buttons for the **status** (all/online/offline) in the table header
 
-```
+```js
     const PlayerTable = ({ status }) => {
         return (
             <div class="players">
